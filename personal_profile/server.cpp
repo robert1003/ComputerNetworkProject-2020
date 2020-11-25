@@ -48,7 +48,10 @@ int main() {
   server.sin_port = htons(80);
 
   // bind()
-  bind(sockfd, (sockaddr*)&server, sizeof(server));
+  if(bind(sockfd, (sockaddr*)&server, sizeof(server)) < 0) {
+    std::cerr << "failed to bind port 80" << std::endl;
+    exit(1);
+  };
 
   // listen()
   listen(sockfd, 1);
