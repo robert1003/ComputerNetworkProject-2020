@@ -64,7 +64,7 @@ int main() {
     std::cerr << "Request:\n" << std::string(buf) << std::endl;
     auto m = parse_http_header(buf);
     if(m["method"] == "GET" && m["path"] == "/") {
-      char resp[] = "HTTP/1.1 200 OK \r\n Connection: close \r\n Content-Length:0 \r\n Upgrade-Insecure-Requests: 1 \r\n Content-Type: text/html \r\n \r\n\r\n <html><meta charset=\"utf-8\"/><h1>Profile of b07902047 羅啟帆</h1><ul><li>Name: 羅啟帆</li><li>Id: B07902047</li><li>Education: National Taiwan Unversity Computer Science and Information Engineering</li><li>Motto: Giver is so strong.</li></html> \r\n\r\n";
+      char resp[] = "HTTP/1.1 200 OK \r\n Connection: close \r\n Upgrade-Insecure-Requests: 1 \r\n Content-Type: text/html \r\n \r\n\r\n <html><meta charset=\"utf-8\"/><h1>Profile of b07902047 羅啟帆</h1><ul><li>Name: 羅啟帆</li><li>Id: B07902047</li><li>Education: National Taiwan Unversity Computer Science and Information Engineering</li><li>Motto: Giver is so strong.</li></html> \r\n\r\n";
       std::cerr << "Reponse:\n" << std::string(resp) << std::endl;
       // send
       send(clientfd, resp, sizeof(resp), 0);
