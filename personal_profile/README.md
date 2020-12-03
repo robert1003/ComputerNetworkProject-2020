@@ -1,4 +1,4 @@
-# Computer Network Project 1 -  Personal Profile
+# Computer Network Project 1 -  Personal profile with C++ socket
 
 ## Environment
 Deployed at `Ubuntu 20.04.1 LTS (GNU/Linux 5.4.0-51-generic x86_64)` with domain name [http://phase1.giversostrong.ninja](http://phase1.giversostrong.ninja)
