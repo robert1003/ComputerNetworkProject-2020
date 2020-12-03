@@ -42,9 +42,9 @@ def construct_response(status_code, message, connection, content_type='', data=b
     if data:
         response += 'Content-Length: {}\r\n'.format(len(data))
     for k, v in cookies.items():
-        response += 'Set-Cookie: {}={}; Expires={}; Secure; HttpOnly;\r\n'.format(k, v, now(days=15))
+        response += 'Set-Cookie: {}={}; Expires={}; HttpOnly;\r\n'.format(k, v, now(days=15))
     for k, v in erase_cookies.items():
-        response += 'Set-Cookie: {}={}; Expires={}; Secure; HttpOnly;\r\n'.format(k, v, now(days=-15))
+        response += 'Set-Cookie: {}={}; Expires={}; HttpOnly;\r\n'.format(k, v, now(days=-15))
     for k, v in kwargs.items():
         response += '{}: {}\r\n'.format(k, v)
     response += '\r\n'

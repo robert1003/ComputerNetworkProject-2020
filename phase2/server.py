@@ -1,6 +1,7 @@
 import os
 import asyncore
 import utils
+import urllib.parse
 
 class HTTPHandler(asyncore.dispatcher_with_send):
 
@@ -10,7 +11,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             print(request)
             headers, data = request.split('\r\n\r\n')
             if data:
-                data = dict(map(lambda x: x.split('='), data.split('&')))
+                data = dict(map(lambda x: tuple(map(urllib.parse.unquote, x.split('='))), data.split('&')))
             headers = headers.split('\r\n')
             method, path, http_version = headers[0].split(' ')
             headers = {key.strip():val.strip() for key, val in map(lambda x: x.split(': '), headers[1:])}
@@ -102,5 +103,5 @@ class HTTPServer(asyncore.dispatcher):
         handler = HTTPHandler(sock)
 
 
-server = HTTPServer('localhost', 8080)
+server = HTTPServer('0.0.0.0', 80)
 asyncore.loop()
