@@ -12,11 +12,11 @@ class HTTPHandler(asyncore.dispatcher_with_send):
     def handle_read(self):
         request = self.recv(8192).decode()
         if request:
-            print(request)
             headers, data = request.split('\r\n\r\n')
             if data:
                 data = dict(map(lambda x: tuple(map(urllib.parse.unquote, x.split('='))), data.split('&')))
             headers = headers.split('\r\n')
+            print(headers[0])
             method, path, http_version = headers[0].split(' ')
             headers = {key.strip():val.strip() for key, val in map(lambda x: x.split(': '), headers[1:])}
             headers['method'] = method
@@ -26,17 +26,17 @@ class HTTPHandler(asyncore.dispatcher_with_send):
                 headers['Cookie'] = dict(map(lambda x: x.split('='), headers['Cookie'].replace(' ', '').split(';')))
 
             if method == 'GET':
-                self.handle_get(headers, data)
+                if self.handle_get(headers, data) == 303:
+                    self.close()
             elif method == 'POST':
-                self.handle_post(headers, data)
+                if self.handle_post(headers, data) == 303:
+                    self.close()
             else:
                 self.send(utils.construct_response(501, 'Not Implemented', 'close', utils.render('template_html/501.html')))
             '''
             elif method == 'DELETE':
                 self.handle_delete(headers, data)
             '''
-
-        self.close()
 
     def handle_get(self, headers, data):
         route = {'/':{True:'/me',False:'/login'}}
@@ -48,17 +48,17 @@ class HTTPHandler(asyncore.dispatcher_with_send):
 
         if path in route:
             self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location=route[path][have_cookie]))
-            return
+            return 303
 
         if not have_cookie and path != '/login' and path in files:
             self.send(utils.construct_response(403, 'Forbidden', 'Close', utils.get_content_type('html'), utils.render('template_html/403.html')))
-            return
+            return 403
 
         if path == '/me':
             messages = utils.get_message(headers['Cookie'])
             username = utils.get_username(headers['Cookie'])
             self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('./index.html', username=username, messages=messages)))
-            return
+            return 200
 
         if path in files:
             path = files[path]
@@ -67,28 +67,36 @@ class HTTPHandler(asyncore.dispatcher_with_send):
 
         if not os.path.isfile(path):
             self.send(utils.construct_response(404, 'Not Found', 'close', utils.get_content_type('html'), utils.render('template_html/404.html')))
+            return 404
         else:
             self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type(path.split('.')[-1]), utils.render(path)))
+            return 200
+
+        return 0
 
     def handle_post(self, headers, data):
         if headers['path'] == '/login':
             cookies = utils.check_and_create_user(data)
             if cookies:
                 self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', cookies=cookies, location='/me'))
+                return 303
             else:
                 self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('login_error.html')))
+                return 200
         else:
             if 'Cookie' not in headers or 'sess_id' not in headers['Cookie'] or not utils.check_cookies({'sess_id':headers['Cookie']['sess_id']}):
                 self.send(utils.construct_response(403, 'Forbidden', 'Close', utils.get_content_type('html'), utils.render('template_html/403.html')))
-                return
+                return 403
             if headers['path'] == '/me':
                 utils.add_message(headers['Cookie'], data)
                 self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location='/me'))
+                return 303
             elif headers['path'] == '/logout':
                 utils.remove_cookies(headers['Cookie'])
                 self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location='/login', erase_cookies=headers['Cookie']))
+                return 303
 
-        return
+        return 0
 
     def handle_delete(self, headers, data):
         pass
@@ -100,7 +108,7 @@ class HTTPServer(asyncore.dispatcher):
         self.create_socket()
         self.set_reuse_addr()
         self.bind((host, port))
-        self.listen(5)
+        self.listen(100)
 
     def handle_accepted(self, sock, addr):
         try:

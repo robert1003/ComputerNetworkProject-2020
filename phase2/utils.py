@@ -33,6 +33,7 @@ def rand_string(k):
 
 def construct_response(status_code, message, connection, content_type='', data=b'', cookies={}, erase_cookies={}, **kwargs):
     response = 'HTTP/1.1 {} {}\r\n'.format(status_code, message)
+    print(response)
     response += 'Date: {}\r\n'.format(now())
     response += 'Connection: {}\r\n'.format(connection)
     #if connection == 'Keep-Alive':
@@ -48,7 +49,6 @@ def construct_response(status_code, message, connection, content_type='', data=b
     for k, v in kwargs.items():
         response += '{}: {}\r\n'.format(k, v)
     response += '\r\n'
-    print(response)
     response = response.encode() + data
     
     return response
