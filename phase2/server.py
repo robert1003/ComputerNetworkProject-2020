@@ -4,8 +4,8 @@ import utils
 import urllib.parse
 import ssl
 
-context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-context.load_cert_chain(certfile="host.crt", keyfile="host.key")
+context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+context.load_cert_chain(certfile=certfile, keyfile=keyfile) 
 
 class HTTPHandler(asyncore.dispatcher_with_send):
 
