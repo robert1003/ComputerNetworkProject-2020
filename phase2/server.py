@@ -2,6 +2,10 @@ import os
 import asyncore
 import utils
 import urllib.parse
+import ssl
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain(certfile="host.crt", keyfile="host.key")
 
 class HTTPHandler(asyncore.dispatcher_with_send):
 
@@ -99,9 +103,12 @@ class HTTPServer(asyncore.dispatcher):
         self.listen(5)
 
     def handle_accepted(self, sock, addr):
-        print('Incoming connection from {}'.format(repr(addr)))
-        handler = HTTPHandler(sock)
+        try:
+            print('Incoming connection from {}'.format(repr(addr)))
+            handler = HTTPHandler(context.wrap_socket(sock, server_side=True))
+        except Exception as e:
+            print(e)
 
 
-server = HTTPServer('0.0.0.0', 80)
+server = HTTPServer('0.0.0.0', 443)
 asyncore.loop()
