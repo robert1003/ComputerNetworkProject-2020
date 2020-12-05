@@ -99,6 +99,11 @@ class HTTPHandler(asyncore.dispatcher_with_send):
                 utils.remove_cookies(headers['Cookie'])
                 self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location='/login', erase_cookies=headers['Cookie']))
                 return 303
+            elif headers['path'] == '/stream':
+                video_path = data['video']
+                video_meta = utils.get_video_meta()
+                self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('./stream.html', video_meta=video_meta, video_path=video_path)))
+                return 200
 
         return 0
 

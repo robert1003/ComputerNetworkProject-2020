@@ -15,7 +15,8 @@ content_type_mapping = {
         'css': 'text/css',
         'ttf': 'font/ttf',
         'mov': 'video/mp4',
-        'mp4': 'video/mp4'
+        'mp4': 'video/mp4',
+        'mpd': 'application/dash+xml'
     }
 
 def get_content_type(name):
@@ -128,7 +129,7 @@ def get_video_meta():
         video_metas.append((item['path'], item['title'], item['description']))
     return video_metas
 
-def render(path, username='', messages=[], video_meta=[], video_url=''):
+def render(path, username='', messages=[], video_meta=[], video_path=''):
     if 'index.html' in path:
         front, mid, back = Path(path).read_text().split('{% tag %}')
         front = front.split('{% name %}')
@@ -142,14 +143,14 @@ def render(path, username='', messages=[], video_meta=[], video_url=''):
     elif 'stream.html' in path:
         front, mid, back = Path(path).read_text().split('{% tag %}')
         front = front.split('{% video %}')
-        if video_url:
-            front = front[0] + front[1].format(video_url) + front[3]
+        if video_path:
+            front = front[0] + front[1].format(video_path) + front[3]
         else:
             front = front[0] + front[2] + front[3]
 
         midd = ''
-        for meta in video_meta:
-            midd += mid.format(*meta)
+        for idx, meta in enumerate(video_meta):
+            midd += mid.format(idx, idx, meta[1], meta[0], idx, idx, meta[2])
 
         return (front + midd + back).encode()
     else:

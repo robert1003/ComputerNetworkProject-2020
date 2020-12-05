@@ -52,14 +52,11 @@
         <div>
             <h1 class="content-subhead">Up</h1>
             {% video %}
-            <script src="/static/js/dash.all.min.js"></script>
-            <script>
-                (function(){
-                    var url = "{}";
-                    var player = dashjs.MediaPlayer().create();
-                    player.initialize(document.querySelector("#videoPlayer"), url, true);
-                })();
-            </script>
+            <center>
+                <video data-dashjs-player width="640" height="360" autoplay="false" controls>
+                    <source src="{}" type="application/dash+xml">
+                </video>
+            </center>
             {% video %}
             <header class="post-header">
                 <h3 class="post-title">Choose a video below!</h3>
@@ -82,7 +79,18 @@
             {% tag %}
             <section class="post">
                 <header class="post-header">
-                    <h2 class="post-title"><a href="{}">{}</a></h2>
+                    <h2 class="post-title">
+                        <form id="stream{}" method="POST" action="/stream">
+                            <a onclick="stream{}()">{}</a>
+                            <input name="video" type="hidden" value="{}">
+                        </form>
+                        <script>
+                            function stream{}() {{
+                                document.getElementById("stream{}").submit()
+                            }}
+                        </script>
+
+                    </h2>
                     <!-- <p class="post-meta">
                         By <a href="#" class="post-author">Tilo Mitra</a> under <a class="post-category post-category-design" href="#">CSS</a> <a class="post-category post-category-pure" href="#">Pure</a>
                         </p> -->
@@ -105,6 +113,7 @@
     </div>
 </div>
 
+<script src="/static/js/dash.all.min.js"></script>
 </body>
 </html>
 
