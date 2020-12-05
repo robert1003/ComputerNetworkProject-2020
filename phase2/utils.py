@@ -35,7 +35,7 @@ def rand_string(k):
 
 def construct_response(status_code, message, connection, content_type='', data=b'', cookies={}, erase_cookies={}, content_range='', **kwargs):
     response = 'HTTP/1.1 {} {}\r\n'.format(status_code, message)
-    print(response)
+    print(response, flush=True)
     response += 'Date: {}\r\n'.format(now())
     response += 'Connection: {}\r\n'.format(connection)
     #if connection == 'Keep-Alive':
@@ -74,7 +74,7 @@ def check_cookies(cookies):
             else:
                 return True
     except Exception as e:
-        print('Check cookie exception:', e)
+        print('Check cookie exception:', e, flush=True)
         return False
 
 def remove_cookies(cookies):

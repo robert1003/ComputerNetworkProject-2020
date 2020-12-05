@@ -16,7 +16,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             if data:
                 data = dict(map(lambda x: tuple(map(urllib.parse.unquote, x.split('='))), data.split('&')))
             headers = headers.split('\r\n')
-            print(headers[0])
+            print(headers[0], flush=True)
             method, path, http_version = headers[0].split(' ')
             headers = {key.strip():val.strip() for key, val in map(lambda x: x.split(': '), headers[1:])}
             headers['method'] = method
@@ -116,10 +116,10 @@ class HTTPServer(asyncore.dispatcher):
 
     def handle_accepted(self, sock, addr):
         try:
-            print('Incoming connection from {}'.format(repr(addr)))
+            print('Incoming connection from {}'.format(repr(addr)), flush=True)
             handler = HTTPHandler(context.wrap_socket(sock, server_side=True))
         except Exception as e:
-            print(e)
+            print(e, flush=True)
 
 
 server = HTTPServer('0.0.0.0', 443)
