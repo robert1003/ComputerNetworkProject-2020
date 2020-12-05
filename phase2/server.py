@@ -5,8 +5,6 @@ import urllib.parse
 import ssl
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-certfile = "./fullchain.pem"
-keyfile = "./privkey.pem"
 context.load_cert_chain(certfile=certfile, keyfile=keyfile) 
 
 class HTTPHandler(asyncore.dispatcher_with_send):
