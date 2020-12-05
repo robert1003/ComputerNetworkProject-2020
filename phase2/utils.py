@@ -129,6 +129,11 @@ def get_video_meta():
         video_metas.append((item['path'], item['title'], item['description']))
     return video_metas
 
+def check_video_path(path):
+    video_meta = conn['phase2']['video_meta']
+    cursor = video_meta.find({'path':path});
+    return cursor.count() == 1
+
 def render(path, username='', messages=[], video_meta=[], video_path=''):
     if 'index.html' in path:
         front, mid, back = Path(path).read_text().split('{% tag %}')
