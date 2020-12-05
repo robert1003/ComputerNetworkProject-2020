@@ -13,7 +13,9 @@ content_type_mapping = {
         'png': 'image/png',
         'jpg': 'image/jpeg',
         'css': 'text/css',
-        'ttf': 'font/ttf'
+        'ttf': 'font/ttf',
+        'mov': 'video/mp4',
+        'mp4': 'video/mp4'
     }
 
 def get_content_type(name):
@@ -31,7 +33,7 @@ def to_datetime(s):
 def rand_string(k):
     return ''.join(random.choices(string.hexdigits, k=k))
 
-def construct_response(status_code, message, connection, content_type='', data=b'', cookies={}, erase_cookies={}, **kwargs):
+def construct_response(status_code, message, connection, content_type='', data=b'', cookies={}, erase_cookies={}, content_range='', **kwargs):
     response = 'HTTP/1.1 {} {}\r\n'.format(status_code, message)
     print(response)
     response += 'Date: {}\r\n'.format(now())
@@ -42,6 +44,8 @@ def construct_response(status_code, message, connection, content_type='', data=b
         response += 'Content-Type: {}\r\n'.format(content_type)
     if data:
         response += 'Content-Length: {}\r\n'.format(len(data))
+    if content_range:
+        response += 'Content-Range: {} {}-{}/{}\r\n'.format(*content_range)
     for k, v in cookies.items():
         response += 'Set-Cookie: {}={}; Expires={}; Secure; HttpOnly;\r\n'.format(k, v, now(days=15))
     for k, v in erase_cookies.items():
@@ -116,7 +120,15 @@ def get_message(cookie):
         messages.append((item['title'], item['message']))
     return messages
 
-def render(path, username='', messages=[]):
+def get_video_meta():
+    video_meta = conn['phase2']['video_meta']
+    cursor = video_meta.find()
+    video_metas = []
+    for item in cursor:
+        video_metas.append((item['path'], item['title'], item['description']))
+    return video_metas
+
+def render(path, username='', messages=[], video_meta=[], video_url=''):
     if 'index.html' in path:
         front, mid, back = Path(path).read_text().split('{% tag %}')
         front = front.split('{% name %}')
@@ -125,6 +137,19 @@ def render(path, username='', messages=[]):
         midd = ''
         for message in messages:
             midd += mid.format(*message)
+
+        return (front + midd + back).encode()
+    elif 'stream.html' in path:
+        front, mid, back = Path(path).read_text().split('{% tag %}')
+        front = front.split('{% video %}')
+        if video_url:
+            front = front[0] + front[1].format(video_url) + front[3]
+        else:
+            front = front[0] + front[2] + front[3]
+
+        midd = ''
+        for meta in video_meta:
+            midd += mid.format(*meta)
 
         return (front + midd + back).encode()
     else:

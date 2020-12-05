@@ -1,7 +1,7 @@
 
 ## Persistent HTTP
 
-I added `Connection: Keep-Alive` in the header to keep the socket alive. This slightly reduces the loading time of the webpage as the number of Connecting/TLS setup decreases.
+I added `Connection: Keep-Alive` in the header to keep the socket alive. This slightly reduces the loading time of the webpage as the number of Connecting/TLS setup decreases (the setup is only needed when establishing a socket connection).
 
 ## Message Board and Register/Login/Logout
 

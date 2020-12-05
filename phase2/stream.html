@@ -3,7 +3,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Message Board</title>
+    <title>Video Streaming</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,12 +17,12 @@
 <div id="layout" class="pure-g">
 <div class="sidebar pure-u-1 pure-u-md-1-4">
     <div class="header">
-        <h1 class="brand-title">Message Board</h1>
-        <h2 class="brand-tagline">Record your message!</h2>
+        <h1 class="brand-title">Video Streaming</h1>
+        <h2 class="brand-tagline">View videos!</h2>
         <nav class="nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a class="pure-button" href="/stream">Stream</a>
+                    <a class="pure-button" href="/me">Message</a>
                 </li>
                 <li class="nav-item">
                     <form id="logout" method="POST" action="/logout">
@@ -43,22 +43,45 @@
         <div class="posts">
             <section class="post">
                 <header class="post-header">
-                    {% name %}
-                    <h2 class="post-title">{}'s Message Board</h2>
-                    {% name %}
-                    <p class="post-meta">
-                    </p>
+                    <h2 class="post-title">Video player</h2>
+                </header>
+                <br>
+            </section>
+        </div>
+        <div>
+            <h1 class="content-subhead">Up</h1>
+            {% video %}
+            <script src="/static/js/dash.all.min.js"></script>
+            <script>
+                (function(){
+                    var url = "{}";
+                    var player = dashjs.MediaPlayer().create();
+                    player.initialize(document.querySelector("#videoPlayer"), url, true);
+                })();
+            </script>
+            {% video %}
+            <header class="post-header">
+                <h3 class="post-title">Choose a video below!</h3>
+            </header>
+            {% video %}
+            <h1 class="content-subhead">Down</h1>
+        </div>
+
+        <div class="posts">
+            <section class="post">
+                <header class="post-header">
+                    <h2 class="post-title">Available videos</h2>
                 </header>
                 <br>
             </section>
         </div>
         <div class="posts">
-            <h1 class="content-subhead">Messages</h1>
+            <h1 class="content-subhead">Choose one!</h1>
             <!-- A single blog post -->
             {% tag %}
             <section class="post">
                 <header class="post-header">
-                    <h2 class="post-title">{}</h2>
+                    <h2 class="post-title"><a href="{}">{}</a></h2>
                     <!-- <p class="post-meta">
                         By <a href="#" class="post-author">Tilo Mitra</a> under <a class="post-category post-category-design" href="#">CSS</a> <a class="post-category post-category-pure" href="#">Pure</a>
                         </p> -->
@@ -71,45 +94,14 @@
             </section>
             {% tag %}
         </div>
-        <!-- new message -->
-        <form class="pure-form pure-form-aligned" method="POST">
-            <h1 class="content-subhead">New Message</h1>
-            <br>
-            <fieldset>
-                <div class="pure-control-group pure-g">
-                    <div class="pure-u-1 pure-u-md-1-5"></div>
-                    <input
-                        name="title"
-                        class="pure-u-1 pure-u-md-1-3"
-                        type="text"
-                        placeholder="Title"
-                        required
-                        >
-                    <input
-                        name="message"
-                        class="pure-u-1 pure-u-md-1-3"
-                        type="text"
-                        placeholder="Message"
-                        required
-                        >
-                </div>
-            </fieldset>
-            <div class="pure-g">
-                <div class="pure-u-1 pure-u-md-2-5"></div>
-                <div class="pure-u-1 pure-u-md-1-5">
-                    <button type="submit" class="pure-button pure-button-primary">Add message</button>
-                </div>
-            </div>
-            <div class="pure-u-1 pure-u-md-2-5"></div>
-        </form>
-    </div>
-    </section>
-    <div class="footer">
+        <div class="footer">
             <h1 class="content-subhead"></h1>
             <p>
                 Made with <a href="https://purecss.io/layouts/#common-layouts">Pure.css Blog layout</a>
             </p>
         </div>
+    </div>
+    </section>
 </div>
 
 </body>

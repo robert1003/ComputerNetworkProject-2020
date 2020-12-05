@@ -5,6 +5,8 @@ import urllib.parse
 import ssl
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+certfile = "./fullchain.pem"
+keyfile = "./privkey.pem"
 context.load_cert_chain(certfile=certfile, keyfile=keyfile) 
 
 class HTTPHandler(asyncore.dispatcher_with_send):
@@ -40,7 +42,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
 
     def handle_get(self, headers, data):
         route = {'/':{True:'/me',False:'/login'}}
-        files = {'/me': './index.html', '/login': './login.html'}
+        files = {'/me': './index.html', '/login': './login.html', '/stream': './stream.html', '/assets': './assets'}
         path = headers['path'].replace('..', '.')
         have_cookie = True
         if 'Cookie' not in headers or 'sess_id' not in headers['Cookie'] or not utils.check_cookies({'sess_id':headers['Cookie']['sess_id']}):
@@ -50,7 +52,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location=route[path][have_cookie]))
             return 303
 
-        if not have_cookie and path != '/login' and path in files:
+        if not have_cookie and path != '/login' and any([path.startswith(f) for f in files]):
             self.send(utils.construct_response(403, 'Forbidden', 'Close', utils.get_content_type('html'), utils.render('template_html/403.html')))
             return 403
 
@@ -59,6 +61,10 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             username = utils.get_username(headers['Cookie'])
             self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('./index.html', username=username, messages=messages)))
             return 200
+        elif path == '/stream':
+            video_meta = utils.get_video_meta()
+            self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('./stream.html', video_meta=video_meta)))
+
 
         if path in files:
             path = files[path]
