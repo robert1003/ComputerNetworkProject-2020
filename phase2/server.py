@@ -101,6 +101,9 @@ class HTTPHandler(asyncore.dispatcher_with_send):
                 return 303
             elif headers['path'] == '/stream':
                 video_path = data['video']
+                if not utils.check_video_path(video_path):
+                    self.send(utils.construct_response(404, 'Not Found', 'close', utils.get_content_type('html'), utils.render('template_html/404.html')))
+                    return 404
                 video_meta = utils.get_video_meta()
                 self.send(utils.construct_response(200, 'OK', 'Keep-Alive', utils.get_content_type('html'), utils.render('./stream.html', video_meta=video_meta, video_path=video_path)))
                 return 200
