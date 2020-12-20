@@ -3,8 +3,12 @@ import asyncore
 import utils
 import urllib.parse
 import ssl
+import datetime
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+cert_folder = "/etc/letsencrypt/live/phase2.giversostrong.ninja/"
+certfile = os.path.join(cert_folder, 'fullchain.pem')
+keyfile = os.path.join(cert_folder, 'privkey.pem')
 context.load_cert_chain(certfile=certfile, keyfile=keyfile) 
 
 class HTTPHandler(asyncore.dispatcher_with_send):
@@ -16,6 +20,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             if data:
                 data = dict(map(lambda x: tuple(map(urllib.parse.unquote, x.split('='))), data.split('&')))
             headers = headers.split('\r\n')
+            print(datetime.datetime.now())
             print(headers[0], flush=True)
             method, path, http_version = headers[0].split(' ')
             headers = {key.strip():val.strip() for key, val in map(lambda x: x.split(': '), headers[1:])}
@@ -37,6 +42,8 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             elif method == 'DELETE':
                 self.handle_delete(headers, data)
             '''
+        else:
+            self.close()
 
     def handle_get(self, headers, data):
         route = {'/':{True:'/me',False:'/login'}}
