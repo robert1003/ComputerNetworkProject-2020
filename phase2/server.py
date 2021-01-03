@@ -52,6 +52,8 @@ class HTTPHandler(asyncore.dispatcher_with_send):
         if 'Cookie' not in headers or 'sess_id' not in headers['Cookie'] or not utils.check_cookies({'sess_id':headers['Cookie']['sess_id']}):
             have_cookie = False
 
+        path = headers['path']
+
         if path in route:
             self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', location=route[path][have_cookie]))
             return 303
