@@ -48,7 +48,6 @@ class HTTPHandler(asyncore.dispatcher_with_send):
     def handle_get(self, headers, data):
         route = {'/':{True:'/me',False:'/login'}}
         files = {'/me': './index.html', '/login': './login.html', '/stream': './stream.html', '/assets': './assets'}
-        path = headers['path'].replace('..', '.')
         have_cookie = True
         if 'Cookie' not in headers or 'sess_id' not in headers['Cookie'] or not utils.check_cookies({'sess_id':headers['Cookie']['sess_id']}):
             have_cookie = False
@@ -58,6 +57,10 @@ class HTTPHandler(asyncore.dispatcher_with_send):
             return 303
 
         if not have_cookie and path != '/login' and any([path.startswith(f) for f in files]):
+            self.send(utils.construct_response(403, 'Forbidden', 'Close', utils.get_content_type('html'), utils.render('template_html/403.html')))
+            return 403
+
+        if '..' in path:
             self.send(utils.construct_response(403, 'Forbidden', 'Close', utils.get_content_type('html'), utils.render('template_html/403.html')))
             return 403
 
