@@ -12,6 +12,7 @@ Currently support only Chrome and Firefox.
 
 * I used [MongoDB](https://www.mongodb.com) as my database to store cookies, users, messages and video meta informations. 
 * The cookies are set as with appropriate expire time, and both `Secure` option and `HttpOnly` option are turned on to prevent cookies being stolen by attacks like [XSS](https://en.wikipedia.org/wiki/Cross-site_scripting) or [MITM](https://en.wikipedia.org/wiki/Man-in-the-middle_attack). I also turned on `SameSite=strict` to prevent [CSRF](https://blog.techbridge.cc/2017/02/25/csrf-introduction/) attack ([SameSite cookie ref](https://web.dev/samesite-cookies-explained/)).
+* I used sha256 to hash my stored password to improve security.
 
 ## Async I/O and Persistent HTTP(S)
 
