@@ -15,7 +15,6 @@ def add_sample_message():
     message = conn['phase2']['message']
     user_id = next(user.find({'user':'test'}))['_id']
     data = {'user': user_id, 'title': 'Computer Network Phase2', 'message': 'This is an example message.'}
-    print(data)
     result = message.insert_one(data)
     print('added 1 message for user "test"')
 
