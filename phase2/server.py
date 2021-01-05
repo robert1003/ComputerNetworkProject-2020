@@ -4,9 +4,10 @@ import utils
 import urllib.parse
 import ssl
 import datetime
+import hashlib
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-cert_folder = "/etc/letsencrypt/live/phase2.giversostrong.ninja/"
+cert_folder = "./"
 certfile = os.path.join(cert_folder, 'fullchain.pem')
 keyfile = os.path.join(cert_folder, 'privkey.pem')
 context.load_cert_chain(certfile=certfile, keyfile=keyfile) 
@@ -92,6 +93,7 @@ class HTTPHandler(asyncore.dispatcher_with_send):
 
     def handle_post(self, headers, data):
         if headers['path'] == '/login':
+            data['pass'] = hashlib.sha256(data['pass'].encode()).hexdigest()
             cookies = utils.check_and_create_user(data)
             if cookies:
                 self.send(utils.construct_response(303, 'See Other', 'Keep-Alive', cookies=cookies, location='/me'))
@@ -143,5 +145,5 @@ class HTTPServer(asyncore.dispatcher):
             print(e, flush=True)
 
 
-server = HTTPServer('0.0.0.0', 443)
+server = HTTPServer('0.0.0.0', 8080)
 asyncore.loop()
