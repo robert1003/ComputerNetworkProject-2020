@@ -1,8 +1,14 @@
 # Computer Network Project Phase 2 - Setup
 
+prerequisites: python3, pip, iptables (to redirect 443 to 8080)
+
 ```
 bash build_and_start.sh
 ```
+
+# Computer Network Project Phase 2 - Deployment
+
+Currently deployed at https://phase2.giversostrong.ninja
 
 # Computer Network Project Phase 2 - Features
 
